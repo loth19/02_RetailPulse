@@ -1,303 +1,136 @@
-# 📊 RetailPulse - Projet d'Analyse de Données Retail
+# RetailPulse
 
-Un projet complet d'analyse de données e-commerce avec génération de données synthétiques, nettoyage, analyse SQL et visualisations.
+Pipeline Data Analytics de bout en bout sur un cas retail: generation de donnees, nettoyage, calcul de KPI SQL et visualisations prêtes a presenter.
 
----
+## Pitch recrutement
 
-## 📋 Table des matières
+Ce projet montre ma capacite a livrer une chaine data complete:
 
-- [Vue d'ensemble](#vue-densemble)
-- [Structure du projet](#structure-du-projet)
-- [Architecture de données](#architecture-de-données)
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Fichiers importants](#fichiers-importants)
-- [KPIs générés](#kpis-générés)
-- [Workflow complet](#workflow-complet)
+- conception d'un jeu de donnees retail realiste,
+- nettoyage et fiabilisation des donnees,
+- modelisation et interrogation SQL,
+- production de livrables business (CSV + graphiques).
 
----
+## Resultats obtenus
 
-## 🎯 Vue d'ensemble
+### KPI business (sorties pipeline)
 
-**RetailPulse** est un pipeline d'analyse de données qui :
+- CA cumule observe: 498578206.98
+- CA mensuel moyen: 38352169.77
+- Mois le plus performant: 2026-03 (48149756.56)
+- Mois le plus creux: 2026-04 (5248217.31)
 
-✅ Génère **1000 commandes synthétiques** pour 200 clients sur 50 produits  
-✅ Nettoie les données (doublons, valeurs nulles, aberrantes)  
-✅ Persiste les données dans une **base SQLite**  
-✅ Calcule **4 KPIs métier** via requêtes SQL  
-✅ Crée des **visualisations matplotlib** publication-ready
+### Top 5 produits (par revenue)
 
-**Technologies utilisées :**
-- Python 3.x
-- Pandas (manipulation de données)
-- SQLite3 (persistance)
-- Faker (données synthétiques)
-- Matplotlib (visualisations)
-- Jupyter Notebooks
+| Rang | Produit | Categorie | Revenue |
+|---|---|---|---:|
+| 1 | réveiller6 | Photo | 15728466.14 |
+| 2 | paupière16 | Audio | 15147544.97 |
+| 3 | phrase15 | Telephonie | 14492147.68 |
+| 4 | auteur7 | Photo | 14294467.13 |
+| 5 | prochain9 | Informatique | 13691166.70 |
 
----
+### Top clients VIP (aperçu)
 
-## 📁 Structure du projet
+| Rang | Client | Ville | Depenses |
+|---|---|---|---:|
+| 1 | Grégoire noël | Henry | 6062321.03 |
+| 2 | Lucie delmas | Pierre | 6024135.06 |
+| 3 | Sabine le olivier | Turpin | 5822438.95 |
 
-```
+### Periodes creuses
+
+| Mois | Nombre de commandes |
+|---|---:|
+| 2026-04 | 8 |
+| 2025-04 | 72 |
+| 2025-12 | 74 |
+
+## Visuels du projet
+
+Les graphiques sont disponibles dans le depot:
+
+- outputs/ca_mensuel.png
+- outputs/top_produits.png
+- outputs/top_clients.png
+
+## Architecture de la pipeline
+
+1. Generation de donnees synthetiques dans src/generate_data.ipynb.
+2. Nettoyage dans data/raw/clean/clean_data.ipynb.
+3. Calcul des KPI dans notebooks/02_exploration.ipynb via sql/kpi_*.sql.
+4. Visualisation et export dans outputs/02_visualisation.ipynb.
+
+## Structure du projet
+
+```text
 02_RetailPulse/
-├── .git/                           # Versioning Git
-├── .gitignore                      # Fichiers à ignorer (*.db-shm, *.db-wal)
-├── requirements.txt                # Dépendances Python
-├── README.md                       # Ce fichier
-│
-├── data/                           # 📊 Données brutes et nettoyées
-│   └── raw/
-│       ├── clients.csv             # 200 clients + métadonnées
-│       ├── produits.csv            # 50 produits catégorisés
-│       ├── commandes.csv           # 1000 commandes avec montants
-│       └── clean/
-│           ├── clients_clean.csv
-│           ├── produits_clean.csv
-│           └── commandes_clean.csv
-│
-├── src/                            # 💻 Code source
-│   ├── generate_data.ipynb         # Notebook : Génération données synthétiques
-│   └── data/
-│       ├── 02_RetailPulse.db       # 🔐 Base SQLite (3 tables, FK activées)
-│       ├── 02_RetailPulse.db-shm   # Cache SQLite (généré, dans .gitignore)
-│       ├── 02_RetailPulse.db-wal   # Journal SQLite (généré, dans .gitignore)
-│       └── raw/                    # Copies locales des CSVs
-│
-├── notebooks/                      # 📔 Cahiers d'analyse
-│   └── 02_exploration.ipynb        # Notebook : Calcul des KPIs avec SQL
-│
-├── sql/                            # 🔍 Requêtes KPI réutilisables
-│   ├── kpi_CA_mensuel.sql          # Chiffre d'affaires par mois
-│   ├── kpi_top_produits.sql        # Top 5 produits par revenu
-│   ├── kpi_clients_vip.sql         # Top 10 clients par dépenses
-│   └── kpi_periodes_creuses.sql    # 3 mois avec moins de commandes
-│
-└── outputs/                        # 📈 Résultats & visualisations
-    ├── 02_visualisation.ipynb      # Notebook : Génération PNGs
-    ├── ca_mensuel.png              # 📊 Graphique : CA mensuel
-    ├── top_produits.png            # 📊 Graphique : Top 5 produits
-    ├── top_clients.png             # 📊 Graphique : Top 10 clients VIP
-    ├── CA_mensuel.csv              # Données intermédiaires (CSV)
-    ├── top_produits.csv
-    ├── clients_vip.csv
-    └── periodes_creuses.csv
+|-- data/
+|   |-- raw/
+|   |   |-- clients.csv
+|   |   |-- commandes.csv
+|   |   |-- produits.csv
+|   |   `-- clean/
+|   |       |-- clean_data.ipynb
+|   |       `-- data/clean/
+|   |           |-- clients.csv
+|   |           |-- commandes.csv
+|   |           `-- produits.csv
+|-- notebooks/
+|   `-- 02_exploration.ipynb
+|-- outputs/
+|   |-- 02_visualisation.ipynb
+|   |-- CA_mensuel.csv
+|   |-- clients_vip.csv
+|   |-- periodes_creuses.csv
+|   |-- top_produits.csv
+|   |-- ca_mensuel.png
+|   |-- top_produits.png
+|   `-- top_clients.png
+|-- sql/
+|   |-- kpi_CA_mensuel.sql
+|   |-- kpi_clients_vip.sql
+|   |-- kpi_periodes_creuses.sql
+|   `-- kpi_top_produits.sql
+|-- src/
+|   |-- generate_data.ipynb
+|   `-- data/
+|       `-- 02_RetailPulse
+|-- requirements.txt
+`-- readme.md
 ```
 
----
+## Stack technique
 
-## 🏗️ Architecture de données
+- Python (Pandas, Faker, Matplotlib)
+- SQLite
+- SQL
+- Jupyter Notebook
 
-### Schema SQLite (3 tables)
+## Lancer le projet
 
-#### 1️⃣ **clients** (200 lignes)
-```sql
-CREATE TABLE clients (
-    client_id INTEGER PRIMARY KEY,
-    nom TEXT,
-    email TEXT,
-    ville TEXT,
-    date_inscription TEXT
-);
-```
-
-#### 2️⃣ **produits** (50 lignes)
-```sql
-CREATE TABLE produits (
-    produit_id INTEGER PRIMARY KEY,
-    nom TEXT,
-    categorie TEXT,
-    prix REAL
-);
-```
-
-#### 3️⃣ **commandes** (1000 lignes)
-```sql
-CREATE TABLE commandes (
-    commande_id INTEGER PRIMARY KEY,
-    client_id INTEGER,
-    produit_id INTEGER,
-    date_commande TEXT,
-    quantite INTEGER,
-    montant_total REAL,
-    FOREIGN KEY (client_id) REFERENCES clients(client_id),
-    FOREIGN KEY (produit_id) REFERENCES produits(produit_id)
-);
-```
-
-### Nettoyage appliqué
-
-✅ **Doublons** : 20 doublons volontaires générés → supprimés  
-✅ **Valeurs nulles** : 5% emails nulles → remplacées par "inconnue"  
-✅ **Aberrantes** : 4% montants aberrants (-2000€ à +999999€) → filtrés  
-✅ **Outliers** : Détection IQR (Q1 ± 1.5×IQR) → supprimés  
-✅ **Types** : Conversion dates TEXT → DATETIME  
-
----
-
-## ⚙️ Installation
-
-### Prérequis
-- Python 3.8+
-- pip
-
-### 1. Cloner le repo
-```bash
-git clone <url_repo>
-cd 02_RetailPulse
-```
-
-### 2. Créer l'environnement virtuel
-```bash
+```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1  # Windows PowerShell
-# ou
-source .venv/bin/activate  # Linux/Mac
-```
-
-### 3. Installer les dépendances
-```bash
+.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 4. Vérifier l'installation
-```bash
-python -c "import pandas, sqlite3, faker, matplotlib; print('✅ OK')"
-```
+Ordre d'execution recommande:
 
----
+1. src/generate_data.ipynb
+2. data/raw/clean/clean_data.ipynb
+3. notebooks/02_exploration.ipynb
+4. outputs/02_visualisation.ipynb
 
-## 🚀 Utilisation
+## Points forts du projet
 
-### Étape 1 : Générer les données synthétiques
+- Livrables orientés metier (KPI actionnables).
+- SQL propre et reutilisable (fichiers dedies dans sql/).
+- Pipeline reproductible de la data brute au reporting.
 
-Ouvrir : `src/generate_data.ipynb`
+## Auteur
 
-- 📌 **Cellule 1-5** : Génération des clients/produits/commandes
-- 📌 **Cellule 6-7** : Export CSV vers `data/raw/`
-- 📌 **Cellule 8-14** : Création base SQLite `src/data/02_RetailPulse.db`
-
-```python
-# Exemple de montants au réalisme avec aberrances
-montant = prix * quantite  # Attendu ~150€ - 10000€
-if random.random() < 0.04:  # 4% aberrances
-    montant = random.uniform(-2000.99, 999999)
-```
-
-### Étape 2 : Nettoyer les données
-
-Ouvrir : `data/raw/clean/clean_data.ipynb` (à créer si absent)
-
-- Détection et suppression des doublons
-- Remplissage des valeurs nulles
-- Filtrage des montants négatifs
-- Détection outliers via IQR
-- Export clean CSVs
-
-### Étape 3 : Calculer les KPIs
-
-Ouvrir : `notebooks/02_exploration.ipynb`
-
-Exécute les 4 requêtes SQL (voir [KPIs générés](#kpis-générés)) et exporte :
-- `ca_mensuel.csv`
-- `top_produits.csv`
-- `clients_vip.csv`
-- `periodes_creuses.csv`
-
-**Important** : Les CSVs sont sauvegardés via `df.to_csv("../outputs/nom.csv")` avec le chemin `../` depuis le dossier notebooks/
-
-### Étape 4 : Générer les visualisations
-
-Ouvrir : `outputs/02_visualisation.ipynb`
-
-- Charge les 4 CSVs depuis le répertoire courant
-- Crée les graphiques avec matplotlib
-- Sauvegarde les PNGs : `ca_mensuel.png`, `top_produits.png`, `top_clients.png`
-
-```python
-# Exemple : Chiffre d'affaires mensuel
-df = pd.read_csv("ca_mensuel.csv")
-ax.plot(df["Mois"], df["Chiffre_affaire"], marker="o", color="#2196F3")
-plt.savefig("ca_mensuel.png", dpi=150)
-```
-
----
-
-## 📄 Fichiers importants
-
-| Fichier | Type | Descrition |
-|---------|------|-----------|
-| `src/generate_data.ipynb` | 📓 Notebook | Génère 1000 commandes + DB |
-| `notebooks/02_exploration.ipynb` | 📓 Notebook | Calcule les 4 KPIs |
-| `outputs/02_visualisation.ipynb` | 📓 Notebook | Crée les graphiques PNG |
-| `sql/kpi_*.sql` | 📝 SQL | Requêtes réutilisables |
-| `src/data/02_RetailPulse.db` | 🔐 DB | SQLite persistant |
-| `requirements.txt` | ⚙️ Config | Dépendances (`pandas`, `faker`, etc) |
-
----
-
-## 📊 KPIs générés
-
-### 1. **CA Mensuel** (`kpi_CA_mensuel.sql`)
-```sql
-SELECT round(sum(montant_total),2) as Chiffre_affaire,
-       strftime('%Y-%m', date_commande) as Mois
-FROM commandes
-GROUP BY strftime('%Y-%m', date_commande)
-ORDER BY Mois ASC;
-```
-**Visualisation** : Graphique linéaire avec marqueurs  
-**Fichier PNG** : `outputs/ca_mensuel.png`
-
-### 2. **Top 5 Produits** (`kpi_top_produits.sql`)
-```sql
-SELECT p.nom, 
-       round(sum(c.montant_total),2) as revenue
-FROM commandes c
-LEFT JOIN produits p ON c.produit_id = p.produit_id
-GROUP BY p.produit_id
-ORDER BY revenue DESC
-LIMIT 5;
-```
-**Visualisation** : Diagramme en barres horizontales (5 couleurs)  
-**Fichier PNG** : `outputs/top_produits.png`
-
-### 3. **Top 10 Clients VIP** (`kpi_clients_vip.sql`)
-```sql
-SELECT clients.client_id,
-       clients.nom,
-       clients.ville,
-       round(COALESCE(sum(commandes.montant_total),0),2) as depenses
-FROM clients
-LEFT JOIN commandes ON clients.client_id = commandes.client_id
-GROUP BY clients.client_id
-ORDER BY depenses DESC
-LIMIT 10;
-```
-**Visualisation** : Histogramme vertical avec valeurs (bleu)  
-**Fichier PNG** : `outputs/top_clients.png`
-
-### 4. **Périodes Creuses** (`kpi_periodes_creuses.sql`)
-```sql
-SELECT COUNT(*) as nbre_commandes,
-       strftime('%Y-%m', date_commande) as mois
-FROM commandes
-GROUP BY mois
-ORDER BY nbre_commandes ASC
-LIMIT 3;
-```
-**Insight** : Identifie les 3 mois avec le moins de commandes
-
----
-
-## 🔄 Workflow complet
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. GÉNÉRATION (src/generate_data.ipynb)                │
-│    ├─ Faker: 200 clients + 50 produits + 1000 orders   │
-│    └─ Export: data/raw/*.csv + SQLite DB               │
-└──────────────────┬──────────────────────────────────────┘
+Projet realise par loth19.
                    │
 ┌──────────────────▼──────────────────────────────────────┐
 │ 2. NETTOYAGE (data/raw/clean/clean_data.ipynb)         │
